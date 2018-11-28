@@ -8,6 +8,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 import data
 import secret_settings
 import mergeimage
+from io import BytesIO
 
 global args_chat_id
 
@@ -93,8 +94,13 @@ def finish(bot, update):
    logger.info(f"> end chat #{chat_id}")
    bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
    lst = data.load_image(chat_id)
-   mergeimage.create_collage(lst).save(f"{chat_id}_collage.jpg")
-   logger.info(f"> end chat #{chat_id} save image")
+   im = mergeimage.create_collage(lst)
+
+   bio = BytesIO()
+   bio.name = 'image.jpeg'
+   im.save(bio, 'JPEG')
+   bio.seek(0)
+   bot.send_photo(chat_id, photo=bio)
 
 
 photo_handler = MessageHandler(Filters.photo, photo)
