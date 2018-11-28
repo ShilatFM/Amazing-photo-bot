@@ -36,5 +36,5 @@ def load_image():
    # dota = Image.open(r"C:\Users\RENT\Downloads\fjords.jpg")
    # Image.alpha_composite(dota, python)
 
-save_image("C:\\Users\\RENT\\Desktop\\vvv", 13)
-load_image()
+# save_image("C:\\Users\\RENT\\Desktop\\vvv", 13)
+# load_image()

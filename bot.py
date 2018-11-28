@@ -5,6 +5,8 @@ import data
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 
 import secret_settings
 
@@ -21,7 +23,12 @@ dispatcher = updater.dispatcher
 def start(bot, update):
     chat_id = update.message.chat_id
     logger.info(f"> Start chat #{chat_id}")
-    bot.send_message(chat_id=chat_id, text="💣 Welcome! 💣")
+    bot.send_message(chat_id=chat_id, text="Welcome !!!")
+    keyboard = [[InlineKeyboardButton("album", callback_data='album'),
+                 InlineKeyboardButton("album", callback_data='2'),
+                InlineKeyboardButton("album", callback_data='3')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Please choose:', reply_markup=reply_markup)
 
 
 def respond(bot, update):
@@ -30,6 +37,12 @@ def respond(bot, update):
     logger.info(f"= Got on chat #{chat_id}: {text!r}")
     response = text.replace("7", "💣")
     bot.send_message(chat_id=update.message.chat_id, text=response)
+
+def button(bot, update):
+    query = update.callback_query
+    bot.edit_message_text(text="ok. Ill do a {} for you".format(query.data),
+                          chat_id=query.message.chat_id,
+                          message_id=query.message.message_id)
 
 
 def photo(bot, update):
@@ -52,4 +65,4 @@ dispatcher.add_handler(echo_handler)
 logger.info("Start polling")
 updater.start_polling()
 
-print(secret_settings.BOT_TOKEN)
+updater.dispatcher.add_handler(CallbackQueryHandler(button))
