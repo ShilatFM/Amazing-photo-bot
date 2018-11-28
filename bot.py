@@ -24,12 +24,20 @@ def start(bot, update):
     chat_id = update.message.chat_id
     logger.info(f"> Start chat #{chat_id}")
     bot.send_message(chat_id=chat_id, text="Welcome !!!")
-    keyboard = [[InlineKeyboardButton("album", callback_data='album'),
-                 InlineKeyboardButton("album", callback_data='2'),
-                InlineKeyboardButton("album", callback_data='3')]]
+    keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
+                 InlineKeyboardButton("Calendar", callback_data='Calendar'),
+                InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('Please choose:', reply_markup=reply_markup)
+    update.message.reply_text('Please choose what you want to do:', reply_markup=reply_markup)
 
+def finish(bot, update):
+    chat_id = update.message.chat_id
+    # logger.info(f"> end chat #{chat_id}")
+    bot.send_message(chat_id=chat_id, text="finished !!!")
+    # keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
+    #              InlineKeyboardButton("Calendar", callback_data='Calendar'),
+    #             InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
+    # reply_markup = InlineKeyboardMarkup(keyboard)
 
 def respond(bot, update):
     chat_id = update.message.chat_id
@@ -58,6 +66,9 @@ dispatcher.add_handler(photo_handler)
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
+
+finish_handler = CommandHandler('finish', finish)
+dispatcher.add_handler(finish_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
 dispatcher.add_handler(echo_handler)

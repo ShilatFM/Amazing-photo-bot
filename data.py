@@ -1,6 +1,8 @@
 import shutil
 import gridfs
 from pymongo import mongo_client
+import urllib.request
+from mergeimage import create_collage
 
 c = mongo_client.MongoClient()
 db = c.botPhotos
@@ -10,31 +12,35 @@ def save_image(path, c_id):
    fs.put(path.encode('ascii'), chat=c_id, filename=f"{c_id}.jpg")
 
 
+
+
+from PIL import Image
+import requests
+from io import BytesIO
+
+def load_image(c_id):
+
+    im =[]
+    for grid_out in fs.find({"chat": c_id}):
+        file = grid_out.read()
+        response = requests.get(file.decode("utf-8", "ignore"))
+        im.append(Image.open(BytesIO(response.content)))
+    print(im)
+
+
+
+
 # def load_image(c_id):
 #    num = 0
 #    for grid_out in fs.find({"chat": c_id}):
-#        destination = rf"C:\Users\RENT\Desktop\a\{num}.jpg"
+#        # destination = rf"C:\Users\RENT\Desktop\a\{num}.jpg"
 #        file = grid_out.read()
 #        print(file)
-#        shutil.copyfile(file, destination)
-#
-#
-# # save_image(r"C:\Users\RENT\Desktop\abc", 7)
-# load_image(7)
+#        urllib.request.urlretrieve(file.decode("utf-8", "ignore"), rf"C:\Users\RENT\Desktop\a\{num}.jpg")
+#        num += 1
 
 
+# save_image(r"C:\Users\RENT\Desktop\vvv.jpg", 7)
 
-
-
-def load_image():
-   destination = rf"C:\Users\RENT\Desktop\a\vvv.jpg"
-   for grid_out in fs.find({"chat": 13}):
-       file = grid_out.read()
-       shutil.copyfile(file, destination)
-
-   # python = Image.open(r"C:\Users\RENT\Downloads\qqq.jfif")
-   # dota = Image.open(r"C:\Users\RENT\Downloads\fjords.jpg")
-   # Image.alpha_composite(dota, python)
-
-# save_image("C:\\Users\\RENT\\Desktop\\vvv", 13)
-# load_image()
+print(load_image(701845915))
+# create_collage(load_image(701845915)).save("mycolage.jpg")
