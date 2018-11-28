@@ -8,7 +8,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 import data
 import secret_settings
 import mergeimage
-
+from io import BytesIO
 global args_chat_id
 
 logging.basicConfig(
@@ -35,7 +35,8 @@ def start(bot, update, args):
    bot.send_message(chat_id=chat_id, text="Welcome !!!")
    keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
                 InlineKeyboardButton("Calendar", callback_data='Calendar'),
-               InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
+               InlineKeyboardButton("Greeting Card", callback_data='Greeting Card'),
+                InlineKeyboardButton("Get Link", callback_data='Get Link')]]
    reply_markup = InlineKeyboardMarkup(keyboard)
    update.message.reply_text('Please choose what you want to do:', reply_markup=reply_markup)
 
@@ -60,10 +61,15 @@ def button(bot, update):
     if query.data == 'Greeting Card':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you")
 
+    if query.data == 'Get Link':
+        logger.info(f"> Share chat #{chat_id}")
+
+        bot.send_message(chat_id=chat_id, text="Send this link to your friends")
+        bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
+
 
 def share(bot, update):
     chat_id = update.message.chat_id
-
     logger.info(f"> Share chat #{chat_id}")
 
 
@@ -79,22 +85,31 @@ def photo(bot, update):
    file_id = update.message.photo[-1].file_id
    file_path = bot.getFile(file_id)['file_path']
    logger.info(f"= Got on chat #{chat_id}: add photo!")
-   bot.sendMessage(chat_id=chat_id, text="added succesfull")
    if dicargs[chat_id]:
        data.save_image(file_path, dicargs[chat_id], photo_counter[dicargs[chat_id]])
        photo_counter[dicargs[chat_id]] += 1
    else:
        data.save_image(file_path, chat_id, photo_counter[chat_id])
        photo_counter[chat_id] += 1
+   bot.sendMessage(chat_id=chat_id, text="added succesfull")
+
+   # keyboard = [InlineKeyboardButton("Get Link", callback_data='Get Link')]
+   # reply_markup = InlineKeyboardMarkup(keyboard)
+   # bot.sendMessage(chat_id=chat_id, text="added succesfull", reply_markup=reply_markup)
 
 
 def finish(bot, update):
-   chat_id = update.message.chat_id
-   logger.info(f"> end chat #{chat_id}")
-   bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
-   lst = data.load_image(chat_id)
-   mergeimage.create_collage(lst).save(f"{chat_id}_collage.jpg")
-   logger.info(f"> end chat #{chat_id} save image")
+  chat_id = update.message.chat_id
+  logger.info(f"> end chat #{chat_id}")
+  bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
+  lst = data.load_image(chat_id)
+  im = mergeimage.create_collage(lst)
+
+  bio = BytesIO()
+  bio.name = 'image.jpeg'
+  im.save(bio, 'JPEG')
+  bio.seek(0)
+  bot.send_photo(chat_id, photo=bio)
 
 
 photo_handler = MessageHandler(Filters.photo, photo)
