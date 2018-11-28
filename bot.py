@@ -1,12 +1,14 @@
-import secret_settings
-
 import logging
 
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
-
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+import data
 import secret_settings
+
+global args_chat_id
 
 logging.basicConfig(
     format='[%(levelname)s %(asctime)s %(module)s:%(lineno)d] %(message)s',
@@ -17,35 +19,79 @@ logger = logging.getLogger(__name__)
 updater = Updater(token=secret_settings.BOT_TOKEN)
 dispatcher = updater.dispatcher
 
-
-def start(bot, update):
+dicargs={}
+def start(bot, update, args):
     chat_id = update.message.chat_id
+    if args:
+        dicargs[chat_id] = args
+    print(args)
     logger.info(f"> Start chat #{chat_id}")
-    bot.send_message(chat_id=chat_id, text="💣 Welcome! 💣")
+    bot.send_message(chat_id=chat_id, text="Welcome !!!")
+    keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
+                 InlineKeyboardButton("Calendar", callback_data='Calendar'),
+                InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Please choose what you want to do:', reply_markup=reply_markup)
+
 
 
 def respond(bot, update):
     chat_id = update.message.chat_id
     text = update.message.text
-    logger.info(f"= Got on chat #{chat_id}: {text!r}")
-    response = text.replace("7", "💣")
-    bot.send_message(chat_id=update.message.chat_id, text=response)
+    logger.info(f"> Respond chat #{chat_id}")
 
 
 
-def photo_handler(bot, update):
-    file = bot.getFile(update.message.photo.file_id)
-    # print("file_id: " + str(update.message.photo.file_id))
-    file.download('photo.jpg')
-    bot.send_message("photo send successfully")
 
-# updater = Updater(token='my token')
-# dispatcher = updater.dispatcher
-dispatcher.add_handler(MessageHandler(Filters.photo, photo_handler))
+def button(bot, update):
+    logger.info(f"> Button chat #{chat_id}")
+
+    query = update.callback_query
+
+    bot.edit_message_text(text="ok. Ill do a {} for you".format(query.data),
+                          chat_id=query.message.chat_id,
+                          message_id=query.message.message_id)
+    if query.data == 'Collage':
+        bot.send_message(chat_id=update.message.chat_id, text=f"ok. Ill do a {text} for you")
+
+    if query.data == 'Calender':
+        bot.send_message(chat_id=update.message.chat_id, text=f"ok. Ill do a {text} for you")
+
+    if query.data == 'Greeting Card':
+        bot.send_message(chat_id=update.message.chat_id, text=f"ok. Ill do a {text} for you")
+
+
+def share(bot, update):
+    logger.info(f"> Share chat #{chat_id}")
+
+    chat_id = update.message.chat_id
+
+    bot.send_message(chat_id=chat_id, text="Send this link to your friends")
+    bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
 
 
 
-start_handler = CommandHandler('start', start)
+def photo(bot, update):
+    logger.info(f"> Photo chat #{chat_id}")
+
+    chat_id = update.message.chat_id
+    file_id = update.message.photo[-1].file_id
+    file_path = bot.getFile(file_id)['file_path']
+    logger.info(f"= Got on chat #{chat_id}: add photo!")
+    bot.sendMessage(chat_id=chat_id, text="added succesfull")
+    if dicargs[chat_id]:
+        data.save_image(file_path, dicargs[chat_id])
+    else:
+        data.save_image(file_path, chat_id)
+
+
+
+
+
+photo_handler = MessageHandler(Filters.photo, photo)
+dispatcher.add_handler(photo_handler)
+
+start_handler = CommandHandler('start', start,pass_args=True)
 dispatcher.add_handler(start_handler)
 
 echo_handler = MessageHandler(Filters.text, respond)
@@ -54,4 +100,10 @@ dispatcher.add_handler(echo_handler)
 logger.info("Start polling")
 updater.start_polling()
 
-print(secret_settings.BOT_TOKEN)
+updater.dispatcher.add_handler(CallbackQueryHandler(button))
+
+share_handler = CommandHandler('share', share)
+dispatcher.add_handler(share_handler)
+
+
+
