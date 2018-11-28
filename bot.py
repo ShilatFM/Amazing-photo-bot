@@ -1,6 +1,6 @@
-import secret_settings
 
 import logging
+import data
 
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
@@ -32,18 +32,16 @@ def respond(bot, update):
     bot.send_message(chat_id=update.message.chat_id, text=response)
 
 
+def photo(bot, update):
+    chat_id = update.message.chat_id
+    file_id = update.message.photo[-1].file_id
+    file_path = bot.getFile(file_id)['file_path']
+    logger.info(f"= Got on chat #{chat_id}: add photo!")
+    bot.sendMessage(chat_id=chat_id, text="added succesfull")
+    data.save_image(file_path, chat_id)
 
-def photo_handler(bot, update):
-    file = bot.getFile(update.message.photo.file_id)
-    # print("file_id: " + str(update.message.photo.file_id))
-    file.download('photo.jpg')
-    bot.send_message("photo send successfully")
-
-# updater = Updater(token='my token')
-# dispatcher = updater.dispatcher
-dispatcher.add_handler(MessageHandler(Filters.photo, photo_handler))
-
-
+photo_handler = MessageHandler(Filters.photo, photo)
+dispatcher.add_handler(photo_handler)
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
