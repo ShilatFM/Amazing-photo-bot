@@ -102,10 +102,3 @@ def create_collage_3(imgs):
     target_img.paste(imgs[2], (1200, 0))
 
     return target_img
-# listofimages=['6966686921.jpg', '6966686922.jpg', '6966686923.jpg', '6966686924.jpg', '6966686925.jpg', '6966686921.jpg','6966686921.jpg', '6966686922.jpg', '6966686923.jpg', '6966686924.jpg', '6966686925.jpg', '6966686921.jpg']
-# listofimages_frame=frame_to_image(listofimages, 1, 'black')
-# create_collage_6(listofimages_frame[:6], 'test_collage1.jpg')
-# create_collage_9(listofimages_frame[:9], 'test_collage2.jpg')
-# create_collage_4(listofimages_frame[:4], 'test_collage3.jpg')
-# create_collage_5(listofimages_frame[:5], 'test_collage4.jpg')
-# create_collage_8(listofimages_frame[:8], 'test_collage5.jpg')

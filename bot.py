@@ -1,6 +1,7 @@
 
 import logging
 import data
+import mergeimage
 
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
@@ -32,12 +33,10 @@ def start(bot, update):
 
 def finish(bot, update):
     chat_id = update.message.chat_id
-    # logger.info(f"> end chat #{chat_id}")
-    bot.send_message(chat_id=chat_id, text="finished !!!")
-    # keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
-    #              InlineKeyboardButton("Calendar", callback_data='Calendar'),
-    #             InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
-    # reply_markup = InlineKeyboardMarkup(keyboard)
+    logger.info(f"> end chat #{chat_id}")
+    bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
+    lst = data.load_image(chat_id)
+    mergeimage.create_collage(lst).save(f"{chat_id}_collage.jpg")
 
 def respond(bot, update):
     chat_id = update.message.chat_id
