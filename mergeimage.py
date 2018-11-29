@@ -4,7 +4,8 @@ from PIL import Image,ImageOps, ImageDraw,ImageFont
 import colage
 from io import BytesIO
 
-def print_on_image(im, text):
+def print_on_image_collage(im, text):
+
    # image = Image.open(path)
    draw = ImageDraw.Draw(im)
    font = ImageFont.truetype("arial.ttf", 35)
@@ -12,6 +13,15 @@ def print_on_image(im, text):
    draw.text((0, 550), text, fill=color, font=font)
    return im
 
+def print_on_image_geeting(im, text):
+    draw = ImageDraw.Draw(im)
+    # font = ImageFont.truetype(<font-file>, <font-size>)
+    font = ImageFont.truetype("arial.ttf", 40)
+    # draw.text((x, y),"Sample Text",(r,g,b))
+    color = 'rgb(255, 255, 255)'  # white color
+    draw.text((0, 0),text, fill=color, font=font)
+    im.save('sample-out.jpg')
+    return im
 
 def cut_image(lst):
     photos=[]

@@ -91,7 +91,7 @@ def respond(bot, update):
     chat_id = update.message.chat_id
     text = update.message.text
     logger.info(f"= Got on chat #{chat_id}: {text!r}")
-    text_dic[chat_id]=text
+    text_dic[chat_id]+=text
 
 
 
@@ -123,7 +123,7 @@ def finishCollage(bot, update):
   lst = data.load_image(chat_id)
   lst = mergeimage.cut_image(lst)
   im = mergeimage.create_collage(lst)
-  img = mergeimage.print_on_image(im, text_dic[chat_id])
+  img = mergeimage.print_on_image_collage(im, text_dic[chat_id])
 
 
   bio = BytesIO()
@@ -140,7 +140,14 @@ def finishGreetingCard(bot, update):
   lst = mergeimage.cut_image(lst)
   im = mergeimage.create_collage(lst)
   Greeting =GreetingCard.new_Greeting(im)
-  img = mergeimage.print_on_image(Greeting, text_dic[chat_id])
+  s = text_dic[chat_id].split()
+  newtext=" "
+  for i in range(len(s)):
+      if i % 3 ==0:
+          newtext += "\n"
+      newtext +=" "+s[i]
+
+  img = mergeimage.print_on_image_geeting(Greeting, newtext)
 
   bio = BytesIO()
   bio.name = 'image.jpeg'

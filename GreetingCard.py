@@ -5,11 +5,11 @@ import cloudinary
 
 from PIL import Image,ImageOps, ImageEnhance
 def new_Greeting(im):
-    target_img = Image.new("RGB", (300, 600), "THISTLE")
+    target_img = Image.new("RGB", (300, 600), "#29495d")
     out = im.convert("RGB", (
-        0.986542, 0.154789, 0.756231, 0,
-        0.212671, 0.715160, 0.254783, 0,
-        0.123456, 0.119193, 0.112348, 0))
+    0.412453, 0.357580, 0.180423, 0,
+    0.212671, 0.715160, 0.072169, 0,
+    0.019334, 0.119193, 0.950227, 0 ))
     out.save("Image.jpg")
     o = Image.blend(im, out, 0.5)
 
@@ -22,4 +22,3 @@ def new_Greeting(im):
 
 im = Image.open('image2.jpg')
 target = new_Greeting(im)
-target.show()
