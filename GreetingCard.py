@@ -18,7 +18,3 @@ def new_Greeting(im):
     target_img.paste(o, (0, 400))
     return target_img
 
-
-
-im = Image.open('image2.jpg')
-target = new_Greeting(im)

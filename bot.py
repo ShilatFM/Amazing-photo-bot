@@ -9,6 +9,7 @@ import data
 import secret_settings
 import mergeimage
 import GreetingCard
+import effects
 from io import BytesIO
 global args_chat_id
 
@@ -24,6 +25,7 @@ dispatcher = updater.dispatcher
 dicargs = {}
 photo_counter = {}
 text_dic = {}
+image_dic={}
 
 def start(bot, update, args):
    chat_id = update.message.chat_id
@@ -69,7 +71,43 @@ def button(bot, update):
 
         bot.send_message(chat_id=chat_id, text="Send this link to your friends")
         bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
+    if query.data == 'BlackWhite':
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
+        bio = BytesIO()
+        bio.name = 'BlackWhite.jpeg'
+        image_dic[chat_id]['BlackWhite'].save(bio, 'JPEG')
+        bio.seek(0)
+        bot.send_photo(chat_id, photo=bio)
 
+    if query.data == 'Sunny':
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
+        bio = BytesIO()
+        bio.name = 'Sunny.jpeg'
+        image_dic[chat_id]['Sunny'].save(bio, 'JPEG')
+        bio.seek(0)
+        bot.send_photo(chat_id, photo=bio)
+    if query.data == 'Old':
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
+        bio = BytesIO()
+        bio.name = 'Old.jpeg'
+        image_dic[chat_id]['Old'].save(bio, 'JPEG')
+        bio.seek(0)
+        bot.send_photo(chat_id, photo=bio)
+    if query.data == 'Shine':
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
+        bio = BytesIO()
+        bio.name = 'Shine.jpeg'
+        image_dic[chat_id]['Shine'].save(bio, 'JPEG')
+        bio.seek(0)
+        bot.send_photo(chat_id, photo=bio)
+    # if query.data == 'SeaCollor':
+    #
+    #     bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
+    #     bio = BytesIO()
+    #     bio.name = 'SeaCollor.jpeg'
+    #     image_dic[chat_id]['SeaCollor'].save(bio, 'JPEG')
+    #     bio.seek(0)
+    #     bot.send_photo(chat_id, photo=bio)
 
 def share(bot, update):
     chat_id = update.message.chat_id
@@ -111,9 +149,6 @@ def photo(bot, update):
        photo_counter[chat_id] += 1
    bot.sendMessage(chat_id=chat_id, text="added succesfull")
 
-   # keyboard = [InlineKeyboardButton("Get Link", callback_data='Get Link')]
-   # reply_markup = InlineKeyboardMarkup(keyboard)
-   # bot.sendMessage(chat_id=chat_id, text="added succesfull", reply_markup=reply_markup)
 
 
 def finishCollage(bot, update):
@@ -131,6 +166,15 @@ def finishCollage(bot, update):
   img.save(bio, 'JPEG')
   bio.seek(0)
   bot.send_photo(chat_id, photo=bio)
+  bot.send_message(chat_id=chat_id, text="Now you can choose an effect for your collage. (/effect) ")
+
+  BlackWhite=effects.BlackWhite(img)
+  Sunny=effects.Sunny(img)
+  Shine=effects.Shine(img)
+  Old=effects.Old(img)
+  # SeaCollor=effects.SeaCollor(img)
+  image_dic[chat_id]={'BlackWhite':BlackWhite,'Sunny':Sunny,'Shine':Shine,'Old':Old}
+
 
 def finishGreetingCard(bot, update):
   chat_id = update.message.chat_id
@@ -155,6 +199,14 @@ def finishGreetingCard(bot, update):
   bio.seek(0)
   bot.send_photo(chat_id, photo=bio)
 
+def effect(bot, update):
+    keyboard = [[InlineKeyboardButton("BlackWhite", callback_data='BlackWhite'),
+                 InlineKeyboardButton("Sunny", callback_data='Sunny'),
+                 InlineKeyboardButton("Old", callback_data='Old'),
+                 InlineKeyboardButton("Shine", callback_data='Shine')]]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('Choose your effect for your collage.', reply_markup=reply_markup)
+
 photo_handler = MessageHandler(Filters.photo, photo)
 dispatcher.add_handler(photo_handler)
 
@@ -178,8 +230,12 @@ dispatcher.add_handler(finishCollage_handler)
 
 finishGreetingCard_handler = CommandHandler('finishGreetingCard', finishGreetingCard)
 dispatcher.add_handler(finishGreetingCard_handler)
+
 AddText_handler = CommandHandler('AddText', AddText)
 dispatcher.add_handler(AddText_handler)
 
 respond_handler = CommandHandler('respond', respond)
 dispatcher.add_handler(respond_handler)
+
+effect_handler = CommandHandler('effect', effect)
+dispatcher.add_handler(effect_handler)
