@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 updater = Updater(token=secret_settings.BOT_TOKEN)
 dispatcher = updater.dispatcher
 
+project = {}
 dicargs = {}
 photo_counter = {}
 text_dic = {}
@@ -40,8 +41,7 @@ def start(bot, update, args):
    bot.send_message(chat_id=chat_id, text="Welcome !!!")
    keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
                 InlineKeyboardButton("Calendar", callback_data='Calendar'),
-               InlineKeyboardButton("Greeting Card", callback_data='Greeting Card'),
-                InlineKeyboardButton("Get Link", callback_data='Get Link')]]
+               InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
    reply_markup = InlineKeyboardMarkup(keyboard)
    update.message.reply_text('Please choose what you want to do:', reply_markup=reply_markup)
 
@@ -58,19 +58,51 @@ def button(bot, update):
     logger.info(f"> Button chat #{chat_id}")
 
     if query.data == 'Collage':
-        bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you")
+        project[chat_id] = 'Collage'
+        keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you, Apload photos or press on the button to get a link to send to your friennd, so they will also apload pictures", reply_markup=reply_markup)
 
     if query.data == 'Calender':
-        bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you")
+        project[chat_id] = 'Calender'
+        keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you, Apload photos or press on the button to get a link to send to your friennd, so they will also apload pictures", reply_markup=reply_markup)
 
     if query.data == 'Greeting Card':
-        bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you")
+        project[chat_id] = 'Greeting Card'
+        keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.send_message(chat_id=chat_id, text=f"ok. Ill do a {query.data} for you, Apload photos or press on the button to get a link to send to your friennd, so they will also apload pictures", reply_markup=reply_markup)
 
     if query.data == 'Get Link':
         logger.info(f"> Share chat #{chat_id}")
-
-        bot.send_message(chat_id=chat_id, text="Send this link to your friends")
+        bot.send_message(chat_id=chat_id, text="Send this link to your friends and apload more photos")
         bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
+
+    if query.data == 'Finish':
+        if project[chat_id] == 'Collage':
+            logger.info(f"> end chat #{chat_id}")
+            bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
+            lst = data.load_image(chat_id)
+            lst = mergeimage.cut_image(lst)
+            im = mergeimage.create_collage(lst)
+            img = mergeimage.print_on_image_collage(im, text_dic[chat_id])
+
+            bio = BytesIO()
+            bio.name = 'image.jpeg'
+            img.save(bio, 'JPEG')
+            bio.seek(0)
+            bot.send_photo(chat_id, photo=bio)
+            bot.send_message(chat_id=chat_id, text="Now you can choose an effect for your collage. (/effect) ")
+
+            BlackWhite = effects.BlackWhite(img)
+            Sunny = effects.Sunny(img)
+            Shine = effects.Shine(img)
+            Old = effects.Old(img)
+            # SeaCollor=effects.SeaCollor(img)
+            image_dic[chat_id] = {'BlackWhite': BlackWhite, 'Sunny': Sunny, 'Shine': Shine, 'Old': Old}
+
     if query.data == 'BlackWhite':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
         bio = BytesIO()
@@ -78,6 +110,7 @@ def button(bot, update):
         image_dic[chat_id]['BlackWhite'].save(bio, 'JPEG')
         bio.seek(0)
         bot.send_photo(chat_id, photo=bio)
+        bot.send_message(chat_id=chat_id, text="More efects. (/effect) ")
 
     if query.data == 'Sunny':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
@@ -86,6 +119,8 @@ def button(bot, update):
         image_dic[chat_id]['Sunny'].save(bio, 'JPEG')
         bio.seek(0)
         bot.send_photo(chat_id, photo=bio)
+        bot.send_message(chat_id=chat_id, text="More efects. (/effect) ")
+
     if query.data == 'Old':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
         bio = BytesIO()
@@ -93,6 +128,8 @@ def button(bot, update):
         image_dic[chat_id]['Old'].save(bio, 'JPEG')
         bio.seek(0)
         bot.send_photo(chat_id, photo=bio)
+        bot.send_message(chat_id=chat_id, text="More efects. (/effect) ")
+
     if query.data == 'Shine':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
         bio = BytesIO()
@@ -100,14 +137,7 @@ def button(bot, update):
         image_dic[chat_id]['Shine'].save(bio, 'JPEG')
         bio.seek(0)
         bot.send_photo(chat_id, photo=bio)
-    # if query.data == 'SeaCollor':
-    #
-    #     bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
-    #     bio = BytesIO()
-    #     bio.name = 'SeaCollor.jpeg'
-    #     image_dic[chat_id]['SeaCollor'].save(bio, 'JPEG')
-    #     bio.seek(0)
-    #     bot.send_photo(chat_id, photo=bio)
+        bot.send_message(chat_id=chat_id, text="More efects. (/effect) ")
 
 def share(bot, update):
     chat_id = update.message.chat_id
@@ -147,8 +177,12 @@ def photo(bot, update):
    else:
        data.save_image(file_path, chat_id, photo_counter[chat_id])
        photo_counter[chat_id] += 1
-   bot.sendMessage(chat_id=chat_id, text="added succesfull")
-
+   keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link'),
+                InlineKeyboardButton("Finish", callback_data='Finish')]]
+   reply_markup = InlineKeyboardMarkup(keyboard)
+   bot.send_message(chat_id=chat_id,
+                    text=f"added succesfull",
+                    reply_markup=reply_markup)
 
 
 def finishCollage(bot, update):

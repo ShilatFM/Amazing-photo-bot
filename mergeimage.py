@@ -44,9 +44,8 @@ def cut_image(lst):
 
 def create_collage(images):
     for i in range(len(images)):
-        # images[i] = images[i].resize((600, 600))
-        # images[i] = cut_image(images[i])
         images[i] = ImageOps.expand(images[i],border = 5,fill='black')
+        images[i] = images[i].resize((600, 600))
     while(True):
         if len(images) == 0:
             return None
@@ -54,7 +53,6 @@ def create_collage(images):
             bio = BytesIO()
             bio.name = 'image.jpeg'
             images[0].save(bio, 'JPEG')
-            images[0].show()
             return images[0]
         if len(images) == 2:
             return colage.create_collage_2(images)
