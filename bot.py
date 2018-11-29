@@ -139,11 +139,12 @@ def finishGreetingCard(bot, update):
   lst = data.load_image(chat_id)
   lst = mergeimage.cut_image(lst)
   im = mergeimage.create_collage(lst)
-  Greeting =GreetingCard.createGreetingCard(im)
+  Greeting =GreetingCard.new_Greeting(im)
+  img = mergeimage.print_on_image(Greeting, text_dic[chat_id])
 
   bio = BytesIO()
   bio.name = 'image.jpeg'
-  Greeting.save(bio, 'JPEG')
+  img.save(bio, 'JPEG')
   bio.seek(0)
   bot.send_photo(chat_id, photo=bio)
 
@@ -167,9 +168,9 @@ dispatcher.add_handler(share_handler)
 
 finishCollage_handler = CommandHandler('finishCollage', finishCollage)
 dispatcher.add_handler(finishCollage_handler)
-#
-# finishGreetingCard_handler = CommandHandler('finishGreetingCard', finishGreetingCard)
-# dispatcher.add_handler(finishGreetingCard_handler)
+
+finishGreetingCard_handler = CommandHandler('finishGreetingCard', finishGreetingCard)
+dispatcher.add_handler(finishGreetingCard_handler)
 AddText_handler = CommandHandler('AddText', AddText)
 dispatcher.add_handler(AddText_handler)
 
