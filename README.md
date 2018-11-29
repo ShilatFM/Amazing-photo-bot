@@ -1,9 +1,9 @@
 # Amazing Photo Bot
 https://t.me/AnazingPhotoBot_bot
 
-* {Participant 1 Name}
-* {Participant 2 Name}
-* {Participant 3 Name}
+* Sara M.
+* Giti V.
+* Shilat F. M.
 
 {OPTIONAL: MORE PROJECT INFO}
 
@@ -17,7 +17,6 @@ https://t.me/AnazingPhotoBot_bot
 * Python 3.7
 * pipenv
 * MongoDB
-* {ADD MORE DEPENDENCIES HERE}
 
 ### Setup
 * Clone this repo from github
