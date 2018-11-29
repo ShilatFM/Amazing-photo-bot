@@ -8,7 +8,7 @@ def print_on_image_collage(im, text):
 
    # image = Image.open(path)
    draw = ImageDraw.Draw(im)
-   font = ImageFont.truetype("arial.ttf", 35)
+   font = ImageFont.truetype("arial.ttf", 50)
    color = 'rgb(255, 255, 255)' # white color
    draw.text((0, 550), text, fill=color, font=font)
    return im
