@@ -9,7 +9,7 @@ https://t.me/AnazingPhotoBot_bot
 
 ## Screenshots
 
-![SCREESHOT DECSRIPTION](screenshots/shopping-list-bot-1.png)
+![SCREESHOT DECSRIPTION](https://github.com/Elevationacademy/xt-bot-hackathon-ella-team-1/blob/master/hh.png)
 
 ## How to Run This Bot
 
