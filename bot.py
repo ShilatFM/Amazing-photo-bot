@@ -1,3 +1,4 @@
+import calendar
 import logging
 
 from telegram.ext import CommandHandler
@@ -129,6 +130,19 @@ def button(bot, update):
               img.save(bio, 'JPEG')
               bio.seek(0)
               bot.send_photo(chat_id, photo=bio)
+
+        if project[chat_id] == 'Calender':
+            logger.info(f"> end chat #{chat_id}")
+            bot.send_message(chat_id=chat_id, text="ok, I will send your Greeting Card in few seconds")
+            lst = data.load_image(chat_id)
+            im = calendar.print_on_image(lst)
+            for i in im:
+                bio = BytesIO()
+                bio.name = 'image.jpeg'
+                i.save(bio, 'JPEG')
+                bio.seek(0)
+                bot.send_photo(chat_id, photo=bio)
+
 
     if query.data == 'BlackWhite':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
