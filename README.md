@@ -5,7 +5,7 @@ https://t.me/AnazingPhotoBot_bot
 * Giti V.
 * Shilat F. M.
 
-{OPTIONAL: MORE PROJECT INFO}
+This project creates a collage, calander or greeting card from photos that you and your friends apload to the bot.
 
 ## Screenshots
 
