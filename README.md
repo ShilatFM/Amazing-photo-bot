@@ -1,5 +1,5 @@
-# {YOUR BOT NAME HERE}
-{ONE LINE BOT DESCRIPTION HERE} <https://t.me/{BOT_ID}>
+# Amazing Photo Bot
+https://t.me/AnazingPhotoBot_bot
 
 * {Participant 1 Name}
 * {Participant 2 Name}
