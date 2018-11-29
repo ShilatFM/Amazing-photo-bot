@@ -40,11 +40,14 @@ def start(bot, update, args):
    print(args)
    logger.info(f"> Start chat #{chat_id}")
    bot.send_message(chat_id=chat_id, text="Welcome !!!")
-   keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
-                InlineKeyboardButton("Calendar", callback_data='Calendar'),
-               InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
-   reply_markup = InlineKeyboardMarkup(keyboard)
-   update.message.reply_text('Please choose what you want to do:', reply_markup=reply_markup)
+   if dicargs[chat_id] == chat_id:
+       keyboard = [[InlineKeyboardButton("Collage", callback_data='Collage'),
+                    InlineKeyboardButton("Calendar", callback_data='Calendar'),
+                   InlineKeyboardButton("Greeting Card", callback_data='Greeting Card')]]
+       reply_markup = InlineKeyboardMarkup(keyboard)
+       update.message.reply_text('Please choose what you want to do:', reply_markup=reply_markup)
+   else:
+       bot.send_message(chat_id=chat_id, text="please apload photos")
 
 
 def respond(bot, update):
