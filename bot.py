@@ -8,6 +8,7 @@ from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 import data
 import secret_settings
 import mergeimage
+import GreetingCard
 from io import BytesIO
 global args_chat_id
 
@@ -22,9 +23,11 @@ dispatcher = updater.dispatcher
 
 dicargs = {}
 photo_counter = {}
+text_dic = {}
 
 def start(bot, update, args):
    chat_id = update.message.chat_id
+   text_dic[chat_id] = ""
    if args:
        dicargs[chat_id] = int(args[0])
    else:
@@ -77,6 +80,21 @@ def share(bot, update):
     bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
 
 
+def AddText(bot, update):
+    chat_id = update.message.chat_id
+    text = update.message.text
+    logger.info(f"> AddText chat #{chat_id}")
+    bot.send_message(chat_id=chat_id, text="Please write your text:")
+
+
+def respond(bot, update):
+    chat_id = update.message.chat_id
+    text = update.message.text
+    logger.info(f"= Got on chat #{chat_id}: {text!r}")
+    text_dic[chat_id]=text
+
+
+
 def photo(bot, update):
    chat_id = update.message.chat_id
    logger.info(f"> Photo chat #{chat_id}")
@@ -98,19 +116,36 @@ def photo(bot, update):
    # bot.sendMessage(chat_id=chat_id, text="added succesfull", reply_markup=reply_markup)
 
 
-def finish(bot, update):
+def finishCollage(bot, update):
   chat_id = update.message.chat_id
   logger.info(f"> end chat #{chat_id}")
   bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
   lst = data.load_image(chat_id)
+  lst = mergeimage.cut_image(lst)
   im = mergeimage.create_collage(lst)
+  img = mergeimage.print_on_image(im, text_dic[chat_id])
+
 
   bio = BytesIO()
   bio.name = 'image.jpeg'
-  im.save(bio, 'JPEG')
+  img.save(bio, 'JPEG')
   bio.seek(0)
   bot.send_photo(chat_id, photo=bio)
 
+def finishGreetingCard(bot, update):
+  chat_id = update.message.chat_id
+  logger.info(f"> end chat #{chat_id}")
+  bot.send_message(chat_id=chat_id, text="ok, I will send your Calender in few seconds")
+  lst = data.load_image(chat_id)
+  lst = mergeimage.cut_image(lst)
+  im = mergeimage.create_collage(lst)
+  Greeting =GreetingCard.createGreetingCard(im)
+
+  bio = BytesIO()
+  bio.name = 'image.jpeg'
+  Greeting.save(bio, 'JPEG')
+  bio.seek(0)
+  bot.send_photo(chat_id, photo=bio)
 
 photo_handler = MessageHandler(Filters.photo, photo)
 dispatcher.add_handler(photo_handler)
@@ -130,5 +165,13 @@ updater.dispatcher.add_handler(CallbackQueryHandler(button))
 share_handler = CommandHandler('share', share)
 dispatcher.add_handler(share_handler)
 
-finish_handler = CommandHandler('finish', finish)
-dispatcher.add_handler(finish_handler)
+finishCollage_handler = CommandHandler('finishCollage', finishCollage)
+dispatcher.add_handler(finishCollage_handler)
+#
+# finishGreetingCard_handler = CommandHandler('finishGreetingCard', finishGreetingCard)
+# dispatcher.add_handler(finishGreetingCard_handler)
+AddText_handler = CommandHandler('AddText', AddText)
+dispatcher.add_handler(AddText_handler)
+
+respond_handler = CommandHandler('respond', respond)
+dispatcher.add_handler(respond_handler)

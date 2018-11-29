@@ -1,30 +1,50 @@
 import random
 
-from PIL import Image,ImageOps
+from PIL import Image,ImageOps, ImageDraw,ImageFont
 import colage
+from io import BytesIO
+
+def print_on_image(im, text):
+   # image = Image.open(path)
+   draw = ImageDraw.Draw(im)
+   font = ImageFont.truetype("arial.ttf", 35)
+   color = 'rgb(255, 255, 255)' # white color
+   draw.text((0, 550), text, fill=color, font=font)
+   return im
 
 
-def cut_image(img):
-   im = Image.open(img)
-   x=max(im.size)
-   y=min(im.size)
-   z=x-y
-   if im.size[0]>im.size[1]:
-       region = im.crop((z/2,0, y+(z/2) , y ))
-   else:
-       region = im.crop((0 ,z/2, y,y+(z/2)))
-   return region
+def cut_image(lst):
+    photos=[]
+    print(lst)
+    for i in range(len(lst)):
+       # im = Image.open(lst[i])
+       x=max(lst[i].size)
+       y=min(lst[i].size)
+       z=x-y
+       if lst[i].size[0]>lst[i].size[1]:
+           region = lst[i].crop((z/2,0, y+(z/2) , y ))
+           photos.append(region)
+
+       else:
+
+           region = lst[i].crop((0 ,z/2, y,y+(z/2)))
+           photos.append(region)
+
+    return photos
 
 def create_collage(images):
     for i in range(len(images)):
         # images[i] = images[i].resize((600, 600))
-        images[i] = cut_image(images[i])
-
+        # images[i] = cut_image(images[i])
         images[i] = ImageOps.expand(images[i],border = 5,fill='black')
     while(True):
         if len(images) == 0:
             return None
         if len(images) == 1:
+            bio = BytesIO()
+            bio.name = 'image.jpeg'
+            images[0].save(bio, 'JPEG')
+            images[0].show()
             return images[0]
         if len(images) == 2:
             return colage.create_collage_2(images)
@@ -88,3 +108,4 @@ def create_collage(images):
             img.append(images.pop(0))
             img.append(images.pop(0))
             images.append(colage.create_collage_9(img))
+
