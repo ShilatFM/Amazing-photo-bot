@@ -201,30 +201,32 @@ def respond(bot, update):
     text_dic[chat_id]+=text
 
 
-
 def photo(bot, update):
-   chat_id = update.message.chat_id
-   logger.info(f"> Photo chat #{chat_id}")
+    chat_id = update.message.chat_id
+    logger.info(f"> Photo chat #{chat_id}")
 
-   chat_id = update.message.chat_id
-   file_id = update.message.photo[-1].file_id
-   file_path = bot.getFile(file_id)['file_path']
-   logger.info(f"= Got on chat #{chat_id}: add photo!")
-   if dicargs[chat_id]:
+    chat_id = update.message.chat_id
+    file_id = update.message.photo[-1].file_id
+    file_path = bot.getFile(file_id)['file_path']
+    logger.info(f"= Got on chat #{chat_id}: add photo!")
+    if dicargs[chat_id]:
        data.save_image(file_path, dicargs[chat_id], photo_counter[dicargs[chat_id]])
        photo_counter[dicargs[chat_id]] += 1
-   else:
+    else:
        data.save_image(file_path, chat_id, photo_counter[chat_id])
        photo_counter[chat_id] += 1
 
-
-   keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link'),
-                InlineKeyboardButton("Finish", callback_data='Finish'),
-                InlineKeyboardButton("Add Text", callback_data='Add Text')]]
-   reply_markup = InlineKeyboardMarkup(keyboard)
-   bot.send_message(chat_id=chat_id,
-                    text=f"added succesfull",
-                    reply_markup=reply_markup)
+    if dicargs[chat_id] == chat_id:
+       keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link'),
+                    InlineKeyboardButton("Finish", callback_data='Finish'),
+                    InlineKeyboardButton("Add Text", callback_data='Add Text')]]
+       reply_markup = InlineKeyboardMarkup(keyboard)
+       bot.send_message(chat_id=chat_id,
+                        text=f"added succesfull",
+                        reply_markup=reply_markup)
+    else:
+        bot.send_message(chat_id=chat_id,
+                         text=f"added succesfull")
 
 def effect(bot, update):
     keyboard = [[InlineKeyboardButton("BlackWhite", callback_data='BlackWhite'),
