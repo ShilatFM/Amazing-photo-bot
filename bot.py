@@ -80,6 +80,10 @@ def button(bot, update):
         bot.send_message(chat_id=chat_id, text="Send this link to your friends and apload more photos")
         bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
 
+    if query.data == 'Add Text':
+        logger.info(f"> AddText chat #{chat_id}")
+        bot.send_message(chat_id=chat_id, text="Please write your text:")
+
     if query.data == 'Finish':
         if project[chat_id] == 'Collage':
             logger.info(f"> end chat #{chat_id}")
@@ -102,6 +106,29 @@ def button(bot, update):
             Old = effects.Old(img)
             # SeaCollor=effects.SeaCollor(img)
             image_dic[chat_id] = {'BlackWhite': BlackWhite, 'Sunny': Sunny, 'Shine': Shine, 'Old': Old}
+
+        if project[chat_id] == 'Greeting Card':
+              logger.info(f"> end chat #{chat_id}")
+              bot.send_message(chat_id=chat_id, text="ok, I will send your Greeting Card in few seconds")
+              lst = data.load_image(chat_id)
+              lst = mergeimage.cut_image(lst)
+              im = mergeimage.create_collage(lst)
+              Greeting =GreetingCard.new_Greeting(im)
+              s = text_dic[chat_id].split()
+              newtext=" "
+              for i in range(len(s)):
+                  if i % 3 ==0:
+                      newtext += "\n"
+                  newtext +=" "+s[i]
+
+              img = mergeimage.print_on_image_geeting(Greeting, newtext)
+
+
+              bio = BytesIO()
+              bio.name = 'image.jpeg'
+              img.save(bio, 'JPEG')
+              bio.seek(0)
+              bot.send_photo(chat_id, photo=bio)
 
     if query.data == 'BlackWhite':
         bot.send_message(chat_id=chat_id, text=f"ok. Ill do  the {query.data} effect to your collage ")
@@ -142,8 +169,6 @@ def button(bot, update):
 def share(bot, update):
     chat_id = update.message.chat_id
     logger.info(f"> Share chat #{chat_id}")
-
-
     bot.send_message(chat_id=chat_id, text="Send this link to your friends")
     bot.send_message(chat_id=chat_id, text=f" https://telegram.me/{secret_settings.BOT_NAME}?start={chat_id}")
 
@@ -177,61 +202,15 @@ def photo(bot, update):
    else:
        data.save_image(file_path, chat_id, photo_counter[chat_id])
        photo_counter[chat_id] += 1
+
+
    keyboard = [[InlineKeyboardButton("Get Link", callback_data='Get Link'),
-                InlineKeyboardButton("Finish", callback_data='Finish')]]
+                InlineKeyboardButton("Finish", callback_data='Finish'),
+                InlineKeyboardButton("Add Text", callback_data='Add Text')]]
    reply_markup = InlineKeyboardMarkup(keyboard)
    bot.send_message(chat_id=chat_id,
                     text=f"added succesfull",
                     reply_markup=reply_markup)
-
-
-def finishCollage(bot, update):
-  chat_id = update.message.chat_id
-  logger.info(f"> end chat #{chat_id}")
-  bot.send_message(chat_id=chat_id, text="ok, I will send your collage in few seconds")
-  lst = data.load_image(chat_id)
-  lst = mergeimage.cut_image(lst)
-  im = mergeimage.create_collage(lst)
-  img = mergeimage.print_on_image_collage(im, text_dic[chat_id])
-
-
-  bio = BytesIO()
-  bio.name = 'image.jpeg'
-  img.save(bio, 'JPEG')
-  bio.seek(0)
-  bot.send_photo(chat_id, photo=bio)
-  bot.send_message(chat_id=chat_id, text="Now you can choose an effect for your collage. (/effect) ")
-
-  BlackWhite=effects.BlackWhite(img)
-  Sunny=effects.Sunny(img)
-  Shine=effects.Shine(img)
-  Old=effects.Old(img)
-  # SeaCollor=effects.SeaCollor(img)
-  image_dic[chat_id]={'BlackWhite':BlackWhite,'Sunny':Sunny,'Shine':Shine,'Old':Old}
-
-
-def finishGreetingCard(bot, update):
-  chat_id = update.message.chat_id
-  logger.info(f"> end chat #{chat_id}")
-  bot.send_message(chat_id=chat_id, text="ok, I will send your Calender in few seconds")
-  lst = data.load_image(chat_id)
-  lst = mergeimage.cut_image(lst)
-  im = mergeimage.create_collage(lst)
-  Greeting =GreetingCard.new_Greeting(im)
-  s = text_dic[chat_id].split()
-  newtext=" "
-  for i in range(len(s)):
-      if i % 3 ==0:
-          newtext += "\n"
-      newtext +=" "+s[i]
-
-  img = mergeimage.print_on_image_geeting(Greeting, newtext)
-
-  bio = BytesIO()
-  bio.name = 'image.jpeg'
-  img.save(bio, 'JPEG')
-  bio.seek(0)
-  bot.send_photo(chat_id, photo=bio)
 
 def effect(bot, update):
     keyboard = [[InlineKeyboardButton("BlackWhite", callback_data='BlackWhite'),
@@ -258,12 +237,6 @@ updater.dispatcher.add_handler(CallbackQueryHandler(button))
 
 share_handler = CommandHandler('share', share)
 dispatcher.add_handler(share_handler)
-
-finishCollage_handler = CommandHandler('finishCollage', finishCollage)
-dispatcher.add_handler(finishCollage_handler)
-
-finishGreetingCard_handler = CommandHandler('finishGreetingCard', finishGreetingCard)
-dispatcher.add_handler(finishGreetingCard_handler)
 
 AddText_handler = CommandHandler('AddText', AddText)
 dispatcher.add_handler(AddText_handler)
